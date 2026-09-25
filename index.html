@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#061b2c" />
+<title>Quiz Stand 38 | Optimed · Sellmed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-0: #041320;
+    --bg-1: #072338;
+    --bg-2: #0b3a55;
+    --pink: #ff2e8b;
+    --violet: #7d3cff;
+    --cyan: #25c6ff;
+    --copper: #b9835c;
+    --text: #ffffff;
+    --text-2: rgba(255, 255, 255, 0.72);
+    --text-3: rgba(255, 255, 255, 0.5);
+    --glass: rgba(10, 45, 68, 0.55);
+    --glass-strong: rgba(8, 36, 56, 0.78);
+    --line: rgba(255, 255, 255, 0.14);
+    --line-strong: rgba(255, 255, 255, 0.28);
+    --error: #ff6b9d;
+    --neon: linear-gradient(90deg, var(--pink) 0%, var(--violet) 45%, var(--cyan) 100%);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    font-family: "Poppins", system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(120% 60% at 50% -10%, #0e4a6b 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 55%, #03101b 100%);
+    background-color: var(--bg-0);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Luzes de fundo (como o palco do convite) ---------- */
+  .stage { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .stage::before, .stage::after {
+    content: ""; position: absolute; border-radius: 50%; filter: blur(70px);
+  }
+  .stage::before {
+    width: 60vmax; height: 60vmax; left: -28vmax; bottom: -30vmax;
+    background: radial-gradient(circle, rgba(255, 46, 139, 0.35), transparent 65%);
+  }
+  .stage::after {
+    width: 60vmax; height: 60vmax; right: -30vmax; top: 10vh;
+    background: radial-gradient(circle, rgba(37, 198, 255, 0.28), transparent 65%);
+  }
+  .stage__beam {
+    position: absolute; left: -10%; right: -10%; height: 2px;
+    background: var(--neon); opacity: 0.55; filter: blur(1px);
+    box-shadow: 0 0 18px rgba(125, 60, 255, 0.8), 0 0 42px rgba(37, 198, 255, 0.5);
+  }
+  .stage__beam--one { bottom: 9vh; transform: rotate(-5deg); }
+  .stage__beam--two { bottom: 4vh; transform: rotate(3deg); opacity: 0.3; }
+  .stage__pillar {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(180deg, transparent, rgba(37, 198, 255, 0.55), transparent);
+    box-shadow: 0 0 20px rgba(37, 198, 255, 0.6);
+  }
+  .stage__pillar--l { left: 4%; background: linear-gradient(180deg, transparent, rgba(255, 46, 139, 0.55), transparent); box-shadow: 0 0 20px rgba(255, 46, 139, 0.6); }
+  .stage__pillar--r { right: 4%; }
+
+  .shell {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 760px; margin: 0 auto;
+    padding: max(28px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; min-height: 100dvh;
+  }
+
+  /* ---------- Cabeçalho: 38 stand | 6–9 OUT ---------- */
+  .event { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 4vw, 32px); }
+  .event__logo {
+    display: block; flex: 1 1 auto; min-width: 0; width: 100%; max-width: 440px; height: auto;
+    filter: drop-shadow(0 0 22px rgba(37, 198, 255, 0.18));
+  }
+  .event__divider { flex: none; width: 1px; align-self: stretch; margin: 8% 0; background: var(--line-strong); }
+  .event .brand--optimed { flex: none; }
+  .event .brand--optimed img { width: clamp(30px, 6vw, 46px); height: clamp(30px, 6vw, 46px); }
+  .event .brand--optimed .brand__word { font-size: clamp(24px, 5.4vw, 38px); }
+  .event .brand--optimed small { font-size: clamp(9px, 1.6vw, 12px); }
+  .neon-line {
+    height: 3px; border-radius: 3px; background: var(--neon); margin: 26px 0 28px;
+    box-shadow: 0 0 14px rgba(125, 60, 255, 0.7), 0 0 30px rgba(37, 198, 255, 0.35);
+  }
+
+  .headline {
+    margin: 0; font-weight: 200; font-size: clamp(38px, 9vw, 60px);
+    line-height: 1.08; letter-spacing: -0.01em;
+  }
+  .subhead { margin: 12px 0 0; color: var(--text-2); font-weight: 300; font-size: 16px; }
+
+  /* ---------- Abas / etapas ---------- */
+  .tabs {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 30px 0 16px;
+  }
+  .tabs[hidden] { display: none; }
+  .tab {
+    position: relative; display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.03); color: var(--text-3);
+    font: inherit; font-size: 14px; text-align: left; cursor: default;
+    transition: color 0.25s, border-color 0.25s, background 0.25s;
+  }
+  .tab__num {
+    flex: none; width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 600; font-size: 14px;
+    border: 1px solid currentColor;
+  }
+  .tab[aria-selected="true"] {
+    color: var(--text); border-color: transparent;
+    background:
+      linear-gradient(var(--glass-strong), var(--glass-strong)) padding-box,
+      var(--neon) border-box;
+    border: 1px solid transparent;
+  }
+  .tab[aria-selected="true"] .tab__num { background: var(--neon); border-color: transparent; }
+  .tab.is-done { color: var(--text-2); cursor: pointer; }
+  .tab.is-done .tab__num { background: rgba(37, 198, 255, 0.18); border-color: var(--cyan); color: var(--cyan); }
+
+  /* ---------- Painel ---------- */
+  .panel {
+    position: relative; padding: 26px 22px; border-radius: var(--radius);
+    background: var(--glass); border: 1px solid var(--line);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+  }
+  .panel[hidden] { display: none; }
+  .panel h2 { margin: 0 0 6px; font-weight: 500; font-size: 22px; line-height: 1.3; }
+  .panel .hint { margin: 0 0 22px; color: var(--text-2); font-weight: 300; font-size: 14px; }
+
+  .field { margin-bottom: 18px; }
+  .field label, .field .label {
+    display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2);
+  }
+  .field input[type="text"], .field input[type="tel"] {
+    width: 100%; padding: 15px 16px; border-radius: 12px;
+    border: 1px solid var(--line-strong); background: rgba(3, 18, 30, 0.55);
+    color: var(--text); font: inherit; font-size: 17px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input::placeholder { color: rgba(255, 255, 255, 0.32); }
+  .field input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(37, 198, 255, 0.2); }
+  .field.is-invalid input { border-color: var(--error); }
+  .field__error { display: none; margin-top: 6px; font-size: 13px; color: var(--error); }
+  .field.is-invalid .field__error { display: block; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ---------- Seleção de stand ---------- */
+  .stands { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field label.stand {
+    position: relative; cursor: pointer; margin: 0;
+    text-transform: none; letter-spacing: normal; color: var(--text); font-weight: 400;
+  }
+  .stand input { position: absolute; opacity: 0; pointer-events: none; }
+  .stand__card {
+    height: 100%; min-height: 118px; padding: 16px 12px; border-radius: 14px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    border: 1px solid var(--line-strong); background: rgba(3, 18, 30, 0.45);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+  }
+  .stand:active .stand__card { transform: scale(0.98); }
+  .stand input:focus-visible + .stand__card { box-shadow: 0 0 0 3px rgba(37, 198, 255, 0.35); }
+  .stand input:checked + .stand__card {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(rgba(10, 52, 78, 0.95), rgba(10, 52, 78, 0.95)) padding-box,
+      var(--neon) border-box;
+    box-shadow: 0 0 26px rgba(125, 60, 255, 0.35);
+  }
+  .stand__check {
+    position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%;
+    border: 1px solid var(--line-strong); display: grid; place-items: center;
+    font-size: 13px; color: transparent;
+  }
+  .stand input:checked + .stand__card .stand__check { background: var(--neon); border-color: transparent; color: #fff; }
+
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand img { display: block; }
+  .brand--sellmed img { width: 38px; height: 38px; object-fit: contain; }
+  .brand--sellmed .brand__txt { line-height: 1; }
+  .brand--sellmed .brand__txt b { display: block; font-weight: 600; font-size: 18px; letter-spacing: 0.08em; }
+  .brand--sellmed .brand__txt small { display: block; font-size: 9px; letter-spacing: 0.42em; color: var(--text-2); margin-top: 4px; }
+  .brand--optimed { flex-direction: column; gap: 2px; }
+  .brand--optimed .brand__top { display: flex; align-items: center; gap: 8px; }
+  .brand--optimed img { width: 34px; height: 34px; }
+  .brand--optimed .brand__word { font-weight: 500; font-size: 27px; letter-spacing: -0.02em; line-height: 1; }
+  .brand--optimed small { font-weight: 600; font-style: italic; font-size: 10px; letter-spacing: 0.02em; color: var(--text-2); }
+
+  /* ---------- Consentimento ---------- */
+  .consent {
+    display: flex; gap: 12px; align-items: flex-start; margin: 6px 0 4px; cursor: pointer;
+    font-size: 13px; line-height: 1.5; color: var(--text-2); font-weight: 300;
+  }
+  .consent + .consent { margin-top: 12px; }
+  .consent input { position: absolute; opacity: 0; pointer-events: none; }
+  .consent__box {
+    flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 6px;
+    border: 1px solid var(--line-strong); display: grid; place-items: center; color: transparent; font-size: 13px;
+  }
+  .consent input:checked + .consent__box { background: var(--neon); border-color: transparent; color: #fff; }
+  .consent input:focus-visible + .consent__box { box-shadow: 0 0 0 3px rgba(37, 198, 255, 0.35); }
+  .consent.is-invalid .consent__box { border-color: var(--error); }
+
+  /* ---------- Botões ---------- */
+  .actions { display: flex; gap: 12px; margin-top: 24px; }
+  .btn {
+    appearance: none; border: 0; cursor: pointer; font: inherit; font-weight: 500; font-size: 17px;
+    padding: 16px 22px; border-radius: 999px; color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn--primary {
+    flex: 1; background: var(--neon);
+    box-shadow: 0 10px 30px -8px rgba(125, 60, 255, 0.7), 0 0 20px rgba(37, 198, 255, 0.25);
+  }
+  .btn--ghost { background: transparent; border: 1px solid var(--line-strong); color: var(--text-2); }
+  .btn[disabled] { opacity: 0.55; cursor: progress; }
+  .spinner {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Upload de fotos ---------- */
+  .drop {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; min-height: 190px; padding: 26px 18px; text-align: center; cursor: pointer;
+    border-radius: 16px; border: 1.5px dashed rgba(37, 198, 255, 0.55);
+    background: radial-gradient(80% 90% at 50% 100%, rgba(125, 60, 255, 0.18), transparent 70%), rgba(3, 18, 30, 0.45);
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  .drop.is-over { border-color: var(--pink); background-color: rgba(255, 46, 139, 0.08); }
+  .drop.is-invalid { border-color: var(--error); }
+  .drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .drop__icon {
+    width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--neon); box-shadow: 0 0 26px rgba(125, 60, 255, 0.55);
+  }
+  .drop__title { font-weight: 500; font-size: 17px; }
+  .drop__sub { font-size: 13px; color: var(--text-3); }
+
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; margin-top: 14px; }
+  .thumb {
+    position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line-strong); background: rgba(3, 18, 30, 0.6);
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb button {
+    position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%;
+    border: 0; cursor: pointer; background: rgba(4, 19, 32, 0.8); color: #fff; font-size: 16px; line-height: 1;
+  }
+  .thumb--loading { display: grid; place-items: center; }
+  .count { margin-top: 10px; font-size: 13px; color: var(--text-3); }
+
+  .form-error {
+    margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; font-size: 14px;
+    background: rgba(255, 46, 139, 0.12); border: 1px solid rgba(255, 46, 139, 0.45); color: #ffd1e3;
+  }
+  .form-error[hidden] { display: none; }
+
+  /* ---------- Sucesso ---------- */
+  .done { text-align: center; padding: 40px 22px; }
+  .done__icon {
+    width: 76px; height: 76px; margin: 0 auto 20px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--neon);
+    box-shadow: 0 0 40px rgba(125, 60, 255, 0.6);
+  }
+  .done h2 { font-size: 28px; font-weight: 300; margin-bottom: 10px; }
+  .done p { color: var(--text-2); font-weight: 300; margin: 0 auto 8px; max-width: 460px; }
+  .done .reset-note { font-size: 13px; color: var(--text-3); margin-top: 18px; }
+
+  /* ---------- Rodapé ---------- */
+  .footer {
+    margin-top: auto; padding-top: 40px;
+    display: flex; align-items: center; justify-content: center; gap: 22px; flex-wrap: wrap;
+  }
+  .footer .divider { width: 1px; height: 46px; background: var(--line-strong); }
+  .footer__tagline { font-weight: 300; font-size: 15px; letter-spacing: 0.14em; color: var(--text-2); line-height: 1.5; }
+
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 1fr; gap: 0; }
+    .panel { padding: 22px 16px; }
+    .tab { padding: 10px; font-size: 13px; gap: 8px; }
+    .brand--optimed .brand__word { font-size: 22px; }
+    .brand--optimed img { width: 28px; height: 28px; }
+    .brand--sellmed .brand__txt b { font-size: 15px; }
+    .footer .divider { display: none; }
+    .footer__tagline { flex-basis: 100%; text-align: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" aria-hidden="true">
+  <span class="stage__pillar stage__pillar--l"></span>
+  <span class="stage__pillar stage__pillar--r"></span>
+  <span class="stage__beam stage__beam--one"></span>
+  <span class="stage__beam stage__beam--two"></span>
+</div>
+
+<div class="shell">
+  <header class="event">
+    <img class="event__logo" src="assets/logo-congresso.png" alt="46º Congresso Brasileiro de Angiologia e de Cirurgia Vascular — 2026, Salvador – BA" />
+    <span class="event__divider" aria-hidden="true"></span>
+    <span class="brand brand--optimed" role="img" aria-label="Optimed Zylox-Tonbridge">
+      <span class="brand__top"><img src="assets/optimed-mark.svg" alt="" /><span class="brand__word">optimed</span></span>
+      <small>ZYLOX - TONBRIDGE</small>
+    </span>
+  </header>
+
+  <div class="neon-line" aria-hidden="true"></div>
+
+  <h1 class="headline">O horizonte<br />continua aqui</h1>
+  <p class="subhead">Compartilhe com a gente a sua experiência clínica.</p>
+
+  <main id="app">
+    <div class="tabs" role="tablist" aria-label="Etapas">
+      <button class="tab" id="tab-1" role="tab" aria-selected="true" aria-controls="step-1" type="button">
+        <span class="tab__num">1</span><span>Seus dados</span>
+      </button>
+      <button class="tab" id="tab-2" role="tab" aria-selected="false" aria-controls="step-2" type="button">
+        <span class="tab__num">2</span><span>Sua foto</span>
+      </button>
+    </div>
+
+    <!-- Etapa 1: dados -->
+    <form class="panel" id="step-1" role="tabpanel" aria-labelledby="tab-1" novalidate>
+      <h2>Conte um pouco sobre você</h2>
+      <p class="hint">Todos os campos são obrigatórios.</p>
+
+      <div class="field" data-field="fullName">
+        <label for="fullName">Nome completo</label>
+        <input id="fullName" name="fullName" type="text" autocomplete="name" placeholder="Digite seu nome completo" />
+        <div class="field__error">Informe seu nome completo.</div>
+      </div>
+
+      <div class="row">
+        <div class="field" data-field="crm">
+          <label for="crm">CRM</label>
+          <input id="crm" name="crm" type="text" autocomplete="off" autocapitalize="characters" placeholder="Ex.: 12345/BA" />
+          <div class="field__error">Informe seu CRM.</div>
+        </div>
+        <div class="field" data-field="phone">
+          <label for="phone">Celular</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(71) 99999-9999" maxlength="16" />
+          <div class="field__error">Informe um celular válido com DDD.</div>
+        </div>
+      </div>
+
+      <div class="field" data-field="stand">
+        <span class="label" id="stand-label">Você está respondendo de qual stand?</span>
+        <div class="stands" role="radiogroup" aria-labelledby="stand-label">
+          <label class="stand">
+            <input type="radio" name="stand" value="Sellmed" />
+            <span class="stand__card">
+              <span class="stand__check" aria-hidden="true">✓</span>
+              <span class="brand brand--sellmed">
+                <img src="assets/logo-sellmed.png" alt="" />
+                <span class="brand__txt"><b>SELLMED</b><small>BRASIL</small></span>
+              </span>
+            </span>
+          </label>
+          <label class="stand">
+            <input type="radio" name="stand" value="Optimed" />
+            <span class="stand__card">
+              <span class="stand__check" aria-hidden="true">✓</span>
+              <span class="brand brand--optimed">
+                <span class="brand__top"><img src="assets/optimed-mark.svg" alt="" /><span class="brand__word">optimed</span></span>
+                <small>ZYLOX - TONBRIDGE</small>
+              </span>
+            </span>
+          </label>
+        </div>
+        <div class="field__error">Selecione o stand.</div>
+      </div>
+
+      <label class="consent" data-field="consent">
+        <input type="checkbox" name="consent" id="consent" />
+        <span class="consent__box" aria-hidden="true">✓</span>
+        <span>Autorizo a Sellmed Brasil e a Optimed a registrar meus dados e as fotos enviadas para fins desta ação no congresso e para contato relacionado a ela.</span>
+      </label>
+
+      <label class="consent">
+        <input type="checkbox" name="newsletter" id="newsletter" />
+        <span class="consent__box" aria-hidden="true">✓</span>
+        <span>Autorizo me inscrever na newsletter da Optimed. <em style="color:var(--text-3)">(opcional)</em></span>
+      </label>
+
+      <div class="actions">
+        <button class="btn btn--primary" type="submit">Continuar <span aria-hidden="true">→</span></button>
+      </div>
+    </form>
+
+    <!-- Etapa 2: fotos -->
+    <form class="panel" id="step-2" role="tabpanel" aria-labelledby="tab-2" novalidate hidden>
+      <h2>Envie sua foto do produto com o qual você teve uma experiência clínica inesquecível</h2>
+      <p class="hint">Você pode enviar até <span id="max-photos">5</span> imagens.</p>
+
+      <div id="form-error" class="form-error" role="alert" hidden></div>
+
+      <label class="drop" id="drop">
+        <input id="photos" type="file" accept="image/*" multiple />
+        <span class="drop__icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.4-2h5l1.4 2h1.6A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.5"/></svg>
+        </span>
+        <span class="drop__title">Toque para escolher ou tirar uma foto</span>
+        <span class="drop__sub">ou arraste as imagens para cá · JPG, PNG, HEIC</span>
+      </label>
+
+      <div class="thumbs" id="thumbs"></div>
+      <div class="count" id="count"></div>
+
+      <div class="actions">
+        <button class="btn btn--ghost" type="button" id="back">← Voltar</button>
+        <button class="btn btn--primary" type="submit" id="submit">Enviar</button>
+      </div>
+    </form>
+
+    <!-- Sucesso -->
+    <section class="panel done" id="step-done" hidden>
+      <div class="done__icon" aria-hidden="true">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      </div>
+      <h2 id="done-title">Obrigado!</h2>
+      <p>Sua participação foi registrada. Aproveite o congresso e conte com a gente no stand 38.</p>
+      <p class="reset-note" id="reset-note"></p>
+      <div class="actions" style="justify-content:center">
+        <button class="btn btn--ghost" type="button" id="restart">Nova participação</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="brand brand--optimed">
+      <span class="brand__top"><img src="assets/optimed-mark.svg" alt="" /><span class="brand__word">optimed</span></span>
+      <small>ZYLOX - TONBRIDGE</small>
+    </span>
+    <span class="brand brand--sellmed">
+      <img src="assets/logo-sellmed.png" alt="" />
+      <span class="brand__txt"><b>SELLMED</b><small>BRASIL</small></span>
+    </span>
+    <span class="divider" aria-hidden="true"></span>
+    <span class="footer__tagline">Expanding<br />Treatment Horizon</span>
+  </footer>
+</div>
+
+<script>
+var MAX_PHOTOS = 5;
+var MAX_SIDE = 1600;      // redimensiona as fotos antes de enviar
+var JPEG_QUALITY = 0.82;
+var RESET_SECONDS = 25;   // volta para a tela inicial depois do envio
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var step1 = $("step-1"), step2 = $("step-2"), stepDone = $("step-done");
+  var tab1 = $("tab-1"), tab2 = $("tab-2");
+  var photosInput = $("photos"), drop = $("drop"), thumbs = $("thumbs");
+  var formError = $("form-error"), submitBtn = $("submit");
+  var photos = []; // { id, dataUrl }
+  var nextId = 1;
+  var lead = null;
+  var resetTimer = null;
+
+  $("max-photos").textContent = MAX_PHOTOS;
+
+  // ---------- Navegação entre abas ----------
+  function show(step) {
+    step1.hidden = step !== 1;
+    step2.hidden = step !== 2;
+    stepDone.hidden = step !== "done";
+    tab1.setAttribute("aria-selected", String(step === 1));
+    tab2.setAttribute("aria-selected", String(step === 2));
+    tab1.classList.toggle("is-done", step === 2);
+    document.querySelector(".tabs").hidden = step === "done";
+    window.scrollTo({ top: $("app").offsetTop - 16, behavior: "smooth" });
+  }
+  tab1.addEventListener("click", function () { if (!step2.hidden) show(1); });
+  tab2.addEventListener("click", function () { if (!step1.hidden) step1.requestSubmit(); });
+  $("back").addEventListener("click", function () { show(1); });
+
+  // ---------- Máscara de celular ----------
+  $("phone").addEventListener("input", function (e) {
+    var d = e.target.value.replace(/\D/g, "").slice(0, 11);
+    var out = d;
+    if (d.length > 2) out = "(" + d.slice(0, 2) + ") " + d.slice(2);
+    if (d.length > 7) out = "(" + d.slice(0, 2) + ") " + d.slice(2, d.length - 4) + "-" + d.slice(-4);
+    e.target.value = out;
+  });
+
+  // ---------- Etapa 1 ----------
+  function setInvalid(name, invalid) {
+    var el = step1.querySelector('[data-field="' + name + '"]');
+    if (el) el.classList.toggle("is-invalid", invalid);
+    return invalid;
+  }
+  step1.addEventListener("input", function (e) {
+    var wrap = e.target.closest("[data-field]");
+    if (wrap) wrap.classList.remove("is-invalid");
+  });
+  step1.addEventListener("change", function (e) {
+    var wrap = e.target.closest("[data-field]");
+    if (wrap) wrap.classList.remove("is-invalid");
+  });
+
+  step1.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fd = new FormData(step1);
+    var data = {
+      fullName: (fd.get("fullName") || "").toString().trim().replace(/\s+/g, " "),
+      crm: (fd.get("crm") || "").toString().trim().toUpperCase(),
+      phone: (fd.get("phone") || "").toString().trim(),
+      stand: (fd.get("stand") || "").toString(),
+      consent: fd.get("consent") === "on",
+      newsletter: fd.get("newsletter") === "on",
+    };
+    var bad = false;
+    bad = setInvalid("fullName", data.fullName.split(" ").length < 2) || bad;
+    bad = setInvalid("crm", data.crm.replace(/\D/g, "").length < 3) || bad;
+    bad = setInvalid("phone", data.phone.replace(/\D/g, "").length < 10) || bad;
+    bad = setInvalid("stand", !data.stand) || bad;
+    bad = setInvalid("consent", !data.consent) || bad;
+    if (bad) {
+      var first = step1.querySelector(".is-invalid input");
+      if (first) first.focus();
+      return;
+    }
+    lead = data;
+    show(2);
+  });
+
+  // ---------- Etapa 2: fotos ----------
+  function renderThumbs() {
+    thumbs.innerHTML = "";
+    photos.forEach(function (p) {
+      var box = document.createElement("div");
+      box.className = "thumb" + (p.dataUrl ? "" : " thumb--loading");
+      if (p.dataUrl) {
+        var img = document.createElement("img");
+        img.src = p.dataUrl;
+        img.alt = "Foto selecionada";
+        box.appendChild(img);
+        var rm = document.createElement("button");
+        rm.type = "button";
+        rm.setAttribute("aria-label", "Remover foto");
+        rm.textContent = "×";
+        rm.addEventListener("click", function () {
+          photos = photos.filter(function (x) { return x.id !== p.id; });
+          renderThumbs();
+        });
+        box.appendChild(rm);
+      } else {
+        box.innerHTML = '<span class="spinner"></span>';
+      }
+      thumbs.appendChild(box);
+    });
+    var n = photos.length;
+    $("count").textContent = n ? n + " de " + MAX_PHOTOS + " fotos selecionadas" : "";
+  }
+
+  function showError(msg) {
+    formError.textContent = msg;
+    formError.hidden = !msg;
+  }
+
+  function compress(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight));
+        var canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg", JPEG_QUALITY));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("decode")); };
+      img.src = url;
+    });
+  }
+
+  function addFiles(fileList) {
+    showError("");
+    drop.classList.remove("is-invalid");
+    var files = Array.prototype.filter.call(fileList, function (f) {
+      return /^image\//.test(f.type) || /\.(heic|heif)$/i.test(f.name);
+    });
+    var room = MAX_PHOTOS - photos.length;
+    if (files.length > room) {
+      showError("Limite de " + MAX_PHOTOS + " fotos. " + (room > 0 ? "Só as primeiras " + room + " foram adicionadas." : "Remova alguma para adicionar outra."));
+      files = files.slice(0, Math.max(room, 0));
+    }
+    files.forEach(function (file) {
+      var entry = { id: nextId++, dataUrl: null };
+      photos.push(entry);
+      compress(file).then(function (dataUrl) {
+        entry.dataUrl = dataUrl;
+        renderThumbs();
+      }).catch(function () {
+        photos = photos.filter(function (x) { return x !== entry; });
+        showError("Não foi possível ler o arquivo \"" + file.name + "\". Tente outra imagem (JPG ou PNG).");
+        renderThumbs();
+      });
+    });
+    renderThumbs();
+  }
+
+  photosInput.addEventListener("change", function () {
+    addFiles(photosInput.files);
+    photosInput.value = "";
+  });
+  ["dragenter", "dragover"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("is-over"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("is-over"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+  });
+
+  function setSending(on, label) {
+    submitBtn.disabled = on;
+    $("back").disabled = on;
+    submitBtn.innerHTML = on ? '<span class="spinner"></span> ' + (label || "Enviando...") : "Enviar";
+  }
+
+  function newSubmissionId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      var r = (Math.random() * 16) | 0;
+      return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+
+  function postJson(url, options) {
+    return fetch(url, options).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (body) {
+        if (!r.ok || body.status !== "ok") throw new Error(body.message || "HTTP " + r.status);
+        return body;
+      });
+    });
+  }
+
+  // Um id por participação: se a internet cair e a pessoa reenviar,
+  // as mesmas fotos são sobrescritas em vez de duplicadas.
+  var submissionId = null;
+
+  step2.addEventListener("submit", function (e) {
+    e.preventDefault();
+    showError("");
+    if (!lead) { show(1); return; }
+    if (photos.some(function (p) { return !p.dataUrl; })) {
+      showError("Aguarde as fotos terminarem de carregar.");
+      return;
+    }
+    if (!photos.length) {
+      drop.classList.add("is-invalid");
+      showError("Envie pelo menos uma foto para concluir.");
+      return;
+    }
+
+    submissionId = submissionId || newSubmissionId();
+    var id = submissionId;
+    var total = photos.length;
+
+    // Sobe as fotos uma a uma (cada requisição fica pequena), depois os dados.
+    var chain = Promise.resolve();
+    photos.forEach(function (p, i) {
+      chain = chain.then(function () {
+        setSending(true, "Enviando foto " + (i + 1) + " de " + total + "...");
+        return fetch(p.dataUrl).then(function (r) { return r.blob(); }).then(function (blob) {
+          return postJson("/api/photo?id=" + id + "&n=" + (i + 1), {
+            method: "POST",
+            headers: { "Content-Type": "image/jpeg" },
+            body: blob,
+          });
+        });
+      });
+    });
+    chain
+      .then(function () {
+        setSending(true, "Finalizando...");
+        return postJson("/api/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: id,
+            fullName: lead.fullName,
+            crm: lead.crm,
+            phone: lead.phone,
+            stand: lead.stand,
+            consent: lead.consent,
+            newsletter: lead.newsletter,
+            photoCount: total,
+          }),
+        });
+      })
+      .then(function () { finish(); })
+      .catch(function () {
+        showError("Não conseguimos enviar agora. Verifique a internet e toque em Enviar novamente — seus dados e fotos continuam aqui.");
+      })
+      .then(function () { setSending(false); });
+  });
+
+  // ---------- Conclusão e reset ----------
+  function finish() {
+    var first = lead.fullName.split(" ")[0];
+    $("done-title").textContent = "Obrigado, " + first + "!";
+    show("done");
+    var left = RESET_SECONDS;
+    var note = $("reset-note");
+    note.textContent = "Voltando ao início em " + left + "s";
+    clearInterval(resetTimer);
+    resetTimer = setInterval(function () {
+      left -= 1;
+      note.textContent = "Voltando ao início em " + left + "s";
+      if (left <= 0) restart();
+    }, 1000);
+  }
+
+  function restart() {
+    clearInterval(resetTimer);
+    step1.reset();
+    step1.querySelectorAll(".is-invalid").forEach(function (el) { el.classList.remove("is-invalid"); });
+    photos = [];
+    lead = null;
+    submissionId = null;
+    renderThumbs();
+    showError("");
+    drop.classList.remove("is-invalid");
+    show(1);
+    window.scrollTo({ top: 0 });
+  }
+  $("restart").addEventListener("click", restart);
+})();
+</script>
+</body>
+</html>

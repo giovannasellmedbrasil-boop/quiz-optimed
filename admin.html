@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#061b2c" />
+<title>Respostas Stand 38 | Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-0: #041320; --bg-1: #072338;
+    --pink: #ff2e8b; --violet: #7d3cff; --cyan: #25c6ff;
+    --text: #fff; --text-2: rgba(255,255,255,.72); --text-3: rgba(255,255,255,.5);
+    --glass: rgba(10,45,68,.55); --line: rgba(255,255,255,.14); --line-strong: rgba(255,255,255,.28);
+    --error: #ff6b9d;
+    --neon: linear-gradient(90deg, var(--pink) 0%, var(--violet) 45%, var(--cyan) 100%);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; font-family: "Poppins", system-ui, sans-serif; color: var(--text);
+    background: radial-gradient(120% 50% at 50% -10%, #0e4a6b 0%, transparent 60%), linear-gradient(180deg, var(--bg-1), var(--bg-0) 60%);
+    background-color: var(--bg-0); -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 16px 60px; }
+  .top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .top img { height: 64px; width: auto; }
+  .top h1 { margin: 0; font-weight: 300; font-size: 26px; }
+  .top .spacer { flex: 1; }
+  .neon-line { height: 3px; border-radius: 3px; background: var(--neon); margin: 20px 0 24px; box-shadow: 0 0 14px rgba(125,60,255,.6); }
+
+  .panel { background: var(--glass); border: 1px solid var(--line); border-radius: 18px; padding: 22px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .login { max-width: 420px; margin: 8vh auto 0; }
+  .login h2 { margin: 0 0 6px; font-weight: 500; }
+  .login p { margin: 0 0 18px; color: var(--text-2); font-size: 14px; font-weight: 300; }
+  input[type="password"], input[type="search"], select {
+    width: 100%; padding: 13px 14px; border-radius: 12px; border: 1px solid var(--line-strong);
+    background: rgba(3,18,30,.55); color: var(--text); font: inherit; font-size: 16px; outline: none;
+  }
+  input:focus, select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(37,198,255,.2); }
+  select option { background: #072338; }
+  .btn {
+    appearance: none; border: 0; cursor: pointer; font: inherit; font-weight: 500; font-size: 15px; color: #fff;
+    padding: 12px 18px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .btn--primary { background: var(--neon); box-shadow: 0 8px 24px -8px rgba(125,60,255,.7); }
+  .btn--ghost { background: transparent; border: 1px solid var(--line-strong); color: var(--text-2); }
+  .btn[disabled] { opacity: .55; cursor: progress; }
+  .login .btn { width: 100%; justify-content: center; margin-top: 14px; }
+  .error { color: var(--error); font-size: 14px; margin-top: 10px; min-height: 1em; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .stat { padding: 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(3,18,30,.4); }
+  .stat b { display: block; font-size: 30px; font-weight: 300; line-height: 1.1; }
+  .stat span { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  .toolbar input { flex: 1 1 240px; }
+  .toolbar select { flex: 0 1 180px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 500; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); padding: 10px 10px; border-bottom: 1px solid var(--line); }
+  td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.muted { color: var(--text-2); white-space: nowrap; }
+  .name { font-weight: 500; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; border: 1px solid var(--line-strong); }
+  .tag--Optimed { border-color: rgba(185,131,92,.8); color: #e6b48f; }
+  .tag--Sellmed { border-color: rgba(37,198,255,.7); color: #8fe0ff; }
+  .yes { color: #8ff0b5; } .no { color: var(--text-3); }
+  .pics { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pics button { padding: 0; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; width: 56px; height: 56px; cursor: zoom-in; background: rgba(3,18,30,.6); }
+  .pics img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .empty { text-align: center; color: var(--text-3); padding: 40px 0; }
+
+  .viewer { position: fixed; inset: 0; z-index: 10; background: rgba(2,10,18,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; gap: 14px; }
+  .viewer[hidden] { display: none; }
+  .viewer img { max-width: 100%; max-height: calc(100vh - 120px); border-radius: 12px; }
+  .viewer .row { display: flex; gap: 10px; }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    thead { display: none; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tr { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    td { border: 0; padding: 3px 0; }
+    td[data-label]::before { content: attr(data-label) ": "; color: var(--text-3); font-size: 12px; }
+    .top img { height: 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="assets/logo-congresso.png" alt="46º Congresso Brasileiro de Angiologia e de Cirurgia Vascular" />
+    <h1>Respostas · Stand 38</h1>
+    <span class="spacer"></span>
+    <button class="btn btn--ghost" id="logout" type="button" hidden>Sair</button>
+  </header>
+  <div class="neon-line" aria-hidden="true"></div>
+
+  <form class="panel login" id="login">
+    <h2>Acesso restrito</h2>
+    <p>Digite a senha do painel para ver as participações e fotos.</p>
+    <input type="password" id="password" autocomplete="current-password" placeholder="Senha" required />
+    <button class="btn btn--primary" type="submit" id="login-btn">Entrar</button>
+    <div class="error" id="login-error" role="alert"></div>
+  </form>
+
+  <section id="data" hidden>
+    <div class="stats">
+      <div class="stat"><b id="s-total">0</b><span>Participações</span></div>
+      <div class="stat"><b id="s-optimed">0</b><span>Stand Optimed</span></div>
+      <div class="stat"><b id="s-sellmed">0</b><span>Stand Sellmed</span></div>
+      <div class="stat"><b id="s-news">0</b><span>Newsletter Optimed</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="Buscar por nome, CRM ou celular" />
+        <select id="f-stand">
+          <option value="">Todos os stands</option>
+          <option>Optimed</option>
+          <option>Sellmed</option>
+        </select>
+        <button class="btn btn--ghost" type="button" id="refresh">Atualizar</button>
+        <button class="btn btn--ghost" type="button" id="csv">Baixar planilha</button>
+        <button class="btn btn--primary" type="button" id="zip">Baixar todas as fotos</button>
+      </div>
+      <div class="error" id="data-error" role="alert"></div>
+      <table>
+        <thead><tr><th>Data</th><th>Nome</th><th>CRM</th><th>Celular</th><th>Stand</th><th>Newsletter</th><th>Fotos</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<div class="viewer" id="viewer" hidden>
+  <img id="viewer-img" alt="Foto enviada" />
+  <div class="row">
+    <a class="btn btn--primary" id="viewer-dl" href="#">Baixar foto</a>
+    <button class="btn btn--ghost" type="button" id="viewer-close">Fechar</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = "stand38-admin";
+  var records = [];
+  var password = "";
+  try { password = sessionStorage.getItem(KEY) || ""; } catch (e) {}
+
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    return d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+  function slug(s) {
+    return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\w]+/g, "-").replace(/^-|-$/g, "");
+  }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function load() {
+    $("data-error").textContent = "";
+    return fetch("/api/admin/list", { headers: { "x-admin-password": password } })
+      .then(function (r) {
+        if (r.status === 401) throw new Error("auth");
+        if (!r.ok) throw new Error("http");
+        return r.json();
+      })
+      .then(function (body) {
+        records = body.records || [];
+        try { sessionStorage.setItem(KEY, password); } catch (e) {}
+        $("login").hidden = true;
+        $("data").hidden = false;
+        $("logout").hidden = false;
+        render();
+      });
+  }
+
+  function filtered() {
+    var q = $("q").value.trim().toLowerCase();
+    var stand = $("f-stand").value;
+    return records.filter(function (r) {
+      if (stand && r.stand !== stand) return false;
+      if (!q) return true;
+      return [r.fullName, r.crm, r.phone].join(" ").toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
+  function render() {
+    $("s-total").textContent = records.length;
+    $("s-optimed").textContent = records.filter(function (r) { return r.stand === "Optimed"; }).length;
+    $("s-sellmed").textContent = records.filter(function (r) { return r.stand === "Sellmed"; }).length;
+    $("s-news").textContent = records.filter(function (r) { return r.newsletter; }).length;
+
+    var list = filtered();
+    if (!list.length) {
+      $("rows").innerHTML = '<tr><td colspan="7" class="empty">' + (records.length ? "Nenhum resultado para o filtro." : "Ainda não há participações.") + "</td></tr>";
+      return;
+    }
+    $("rows").innerHTML = list.map(function (r) {
+      var pics = (r.photoUrls || []).map(function (u, i) {
+        return '<button type="button" data-src="' + esc(u) + '" data-name="' + esc(slug(r.fullName) + "-foto-" + (i + 1) + ".jpg") + '"><img loading="lazy" src="' + esc(u) + '" alt="Foto ' + (i + 1) + '" /></button>';
+      }).join("");
+      return "<tr>" +
+        '<td class="muted" data-label="Data">' + esc(fmtDate(r.submittedAt)) + "</td>" +
+        '<td class="name">' + esc(r.fullName) + "</td>" +
+        '<td data-label="CRM">' + esc(r.crm) + "</td>" +
+        '<td class="muted" data-label="Celular">' + esc(r.phone) + "</td>" +
+        '<td><span class="tag tag--' + esc(r.stand) + '">' + esc(r.stand) + "</span></td>" +
+        '<td data-label="Newsletter" class="' + (r.newsletter ? "yes" : "no") + '">' + (r.newsletter ? "Sim" : "Não") + "</td>" +
+        '<td><div class="pics">' + pics + "</div></td>" +
+        "</tr>";
+    }).join("");
+  }
+
+  $("login").addEventListener("submit", function (e) {
+    e.preventDefault();
+    password = $("password").value;
+    $("login-btn").disabled = true;
+    $("login-error").textContent = "";
+    load().catch(function (err) {
+      $("login-error").textContent = err.message === "auth" ? "Senha incorreta." : "Não foi possível carregar. Tente de novo.";
+    }).then(function () { $("login-btn").disabled = false; });
+  });
+
+  $("logout").addEventListener("click", function () {
+    try { sessionStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
+  });
+  $("q").addEventListener("input", render);
+  $("f-stand").addEventListener("change", render);
+  $("refresh").addEventListener("click", function () {
+    load().catch(function () { $("data-error").textContent = "Não foi possível atualizar."; });
+  });
+
+  // Visualizar / baixar foto
+  $("rows").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-src]");
+    if (!b) return;
+    $("viewer-img").src = b.dataset.src;
+    $("viewer-dl").href = b.dataset.src + "&download=" + encodeURIComponent(b.dataset.name);
+    $("viewer").hidden = false;
+  });
+  function closeViewer() { $("viewer").hidden = true; $("viewer-img").removeAttribute("src"); }
+  $("viewer-close").addEventListener("click", closeViewer);
+  $("viewer").addEventListener("click", function (e) { if (e.target === $("viewer")) closeViewer(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeViewer(); });
+
+  function download(blob, name) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  var today = new Date().toISOString().slice(0, 10);
+
+  // Planilha (CSV com ; e BOM, abre direto no Excel em português)
+  $("csv").addEventListener("click", function () {
+    var head = ["Data/Hora", "Nome completo", "CRM", "Celular", "Stand", "Newsletter Optimed", "Aceite de uso dos dados", "Qtd. fotos", "Links das fotos"];
+    var lines = [head].concat(filtered().map(function (r) {
+      return [fmtDate(r.submittedAt), r.fullName, r.crm, r.phone, r.stand, r.newsletter ? "Sim" : "Não", r.consent ? "Sim" : "Não",
+        (r.photoUrls || []).length, (r.photoUrls || []).map(function (u) { return location.origin + u; }).join(" ")];
+    })).map(function (row) {
+      return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(";");
+    });
+    download(new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" }), "respostas-stand-38-" + today + ".csv");
+  });
+
+  // Todas as fotos num .zip, uma pasta por participante
+  $("zip").addEventListener("click", function () {
+    var btn = $("zip");
+    var list = filtered();
+    var zip = new JSZip();
+    var jobs = [];
+    list.forEach(function (r) {
+      var folder = zip.folder(slug(fmtDate(r.submittedAt).replace(/[/:, ]+/g, "-")) + "_" + slug(r.fullName) + "_" + r.stand);
+      (r.photoUrls || []).forEach(function (u, i) {
+        jobs.push(function () {
+          return fetch(u).then(function (res) { return res.blob(); }).then(function (b) { folder.file("foto-" + (i + 1) + ".jpg", b); });
+        });
+      });
+    });
+    if (!jobs.length) return;
+    btn.disabled = true;
+    var done = 0;
+    // 4 downloads em paralelo
+    var queue = jobs.slice();
+    function worker() {
+      var job = queue.shift();
+      if (!job) return Promise.resolve();
+      return job().then(function () { done++; btn.textContent = "Baixando " + done + "/" + jobs.length + "..."; return worker(); });
+    }
+    Promise.all([worker(), worker(), worker(), worker()])
+      .then(function () { btn.textContent = "Compactando..."; return zip.generateAsync({ type: "blob" }); })
+      .then(function (blob) { download(blob, "fotos-stand-38-" + today + ".zip"); })
+      .catch(function () { $("data-error").textContent = "Falha ao baixar as fotos. Tente de novo."; })
+      .then(function () { btn.disabled = false; btn.textContent = "Baixar todas as fotos"; });
+  });
+
+  if (password) {
+    load().catch(function () { try { sessionStorage.removeItem(KEY); } catch (e) {} password = ""; });
+  }
+})();
+</script>
+</body>
+</html>
