@@ -14,21 +14,23 @@
 
 ## Onde os dados ficam
 
-Tudo fica num armazenamento **privado** da Vercel (Vercel Blob,
-`quiz-stand-38-respostas`, região São Paulo), na conta/equipe
-**sellmed-brasil**, ligado ao projeto `quiz-stand-38`:
+No **Supabase**, projeto `etjuijrjpzdbiaofpcez`:
 
-```
-respostas/<id>.json      dados de cada participação
-fotos/<id>/foto-N.jpg    fotos daquela participação
-```
+- **Tabela `respostas`** (Table Editor): id, enviado_em, nome, crm, celular,
+  stand, aceite_dados, newsletter, fotos (caminhos das imagens).
+- **Storage → bucket `fotos`** (privado): uma pasta por participante
+  (`<id>/foto-N.jpg`), o mesmo `id` da tabela.
 
-Nada fica público: as fotos só abrem pelo painel (links assinados).
+O site grava pelo servidor da Vercel usando a chave secreta do Supabase
+(variáveis `SUPABASE_URL` e `SUPABASE_SECRET_KEY` na Vercel — nunca vão para o
+navegador nem para este repositório). A tabela e o bucket não aceitam acesso
+público.
 
 ## Painel admin
 
 - Contadores (total, por stand, newsletter), busca e filtro por stand.
 - Clique numa miniatura para ver/baixar a foto.
+- Links de foto na planilha valem 7 dias (baixe de novo para gerar links novos).
 - **Baixar planilha:** CSV que abre direto no Excel, com links das fotos.
 - **Baixar todas as fotos:** um .zip com uma pasta por participante.
 
@@ -40,7 +42,6 @@ admin.html          painel de respostas
 api/photo.js        recebe cada foto
 api/submit.js       grava a participação
 api/admin/list.js   lista as participações (exige senha)
-api/admin/photo.js  entrega uma foto privada (link assinado)
 api/_lib.js         funções compartilhadas
 assets/             logos
 ```
@@ -52,5 +53,6 @@ assets/             logos
   Environment Variables → `ADMIN_PASSWORD` → editar, e republicar.
 - Limites no topo do `<script>` do `index.html`: `MAX_PHOTOS`, `RESET_SECONDS`
   (se mudar `MAX_PHOTOS`, ajuste também `api/photo.js` e `api/submit.js`).
-- Não apague a pasta `.vercel` nem o arquivo `.env.local` (ligam esta pasta
-  ao projeto na Vercel).
+- Não apague a pasta `.vercel` (liga esta pasta ao projeto na Vercel).
+- Plano gratuito do Supabase pausa o projeto após 7 dias sem uso — os dados
+  continuam lá; é só reativar no painel do Supabase.

@@ -1,7 +1,6 @@
 // Grava a participação (dados do formulário) depois que as fotos subiram.
-// POST /api/submit   corpo JSON: { id, fullName, crm, phone, stand, consent, newsletter }
-import { list, put } from "@vercel/blob";
-import { ID_RE, sendJson } from "./_lib.js";
+// POST /api/submit   corpo JSON: { id, fullName, crm, phone, stand, consent, newsletter, photoCount }
+import { BUCKET, ID_RE, sendJson, supabase } from "./_lib.js";
 
 const STANDS = ["Sellmed", "Optimed"];
 
@@ -19,36 +18,34 @@ export default async function handler(req, res) {
   if (!data || typeof data !== "object") return sendJson(res, 400, { status: "error", message: "JSON inválido" });
 
   const id = String(data.id || "");
-  const record = {
+  const row = {
     id,
-    fullName: clean(data.fullName, 120),
+    nome: clean(data.fullName, 120),
     crm: clean(data.crm, 30).toUpperCase(),
-    phone: clean(data.phone, 30),
+    celular: clean(data.phone, 30),
     stand: clean(data.stand, 20),
-    consent: data.consent === true,
+    aceite_dados: data.consent === true,
     newsletter: data.newsletter === true,
   };
-  if (!ID_RE.test(id) || record.fullName.length < 3 || !record.crm || record.phone.replace(/\D/g, "").length < 10 ||
-      !STANDS.includes(record.stand) || !record.consent) {
+  if (!ID_RE.test(id) || row.nome.length < 3 || !row.crm || row.celular.replace(/\D/g, "").length < 10 ||
+      !STANDS.includes(row.stand) || !row.aceite_dados) {
     return sendJson(res, 400, { status: "error", message: "dados incompletos" });
   }
 
   // Só entram as fotos que realmente chegaram ao armazenamento, até a quantidade
   // da tentativa final (sobras de uma tentativa anterior com mais fotos ficam de fora).
   const photoCount = Math.min(Math.max(Number(data.photoCount) || 0, 0), 5);
-  const expected = new Set(Array.from({ length: photoCount }, (_, i) => `fotos/${id}/foto-${i + 1}.jpg`));
-  const { blobs } = await list({ prefix: `fotos/${id}/` });
-  record.photos = blobs.map((b) => b.pathname).filter((p) => expected.has(p)).sort();
-  if (record.photos.length !== photoCount || !photoCount) {
+  const expected = Array.from({ length: photoCount }, (_, i) => `foto-${i + 1}.jpg`);
+  const { data: files, error: listError } = await supabase.storage.from(BUCKET).list(id);
+  if (listError) return sendJson(res, 500, { status: "error", message: "falha ao conferir fotos" });
+  const present = new Set((files || []).map((f) => f.name));
+  if (!photoCount || !expected.every((name) => present.has(name))) {
     return sendJson(res, 400, { status: "error", message: "fotos incompletas" });
   }
+  row.fotos = expected.map((name) => `${id}/${name}`);
+  row.enviado_em = new Date().toISOString();
 
-  record.submittedAt = new Date().toISOString();
-  await put(`respostas/${id}.json`, JSON.stringify(record, null, 2), {
-    access: "private",
-    contentType: "application/json",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
+  const { error } = await supabase.from("respostas").upsert(row);
+  if (error) return sendJson(res, 500, { status: "error", message: "falha ao salvar" });
   return sendJson(res, 200, { status: "ok" });
 }

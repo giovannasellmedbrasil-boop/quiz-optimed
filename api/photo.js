@@ -1,9 +1,6 @@
 // Recebe UMA foto (JPEG já reduzido no aparelho) de um participante.
 // POST /api/photo?id=<uuid da participação>&n=<1..5>   corpo: bytes do JPEG
-import { put } from "@vercel/blob";
-import { ID_RE, readRawBody, sendJson } from "./_lib.js";
-
-export const config = { api: { bodyParser: false } };
+import { BUCKET, ID_RE, readRawBody, sendJson, supabase } from "./_lib.js";
 
 const MAX_PHOTOS = 5;
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -28,11 +25,11 @@ export default async function handler(req, res) {
     return sendJson(res, 400, { status: "error", message: "formato inválido" });
   }
 
-  const blob = await put(`fotos/${id}/foto-${n}.jpg`, body, {
-    access: "private",
+  const path = `${id}/foto-${n}.jpg`;
+  const { error } = await supabase.storage.from(BUCKET).upload(path, body, {
     contentType: "image/jpeg",
-    addRandomSuffix: false,
-    allowOverwrite: true, // reenvio após falha de internet sobrescreve a mesma foto
+    upsert: true, // reenvio após falha de internet sobrescreve a mesma foto
   });
-  return sendJson(res, 200, { status: "ok", pathname: blob.pathname });
+  if (error) return sendJson(res, 500, { status: "error", message: "falha ao salvar a foto" });
+  return sendJson(res, 200, { status: "ok", path });
 }

@@ -1,36 +1,42 @@
-// Painel admin: devolve todas as participações, mais recentes primeiro.
+// Painel admin: devolve todas as participações, mais recentes primeiro,
+// com links temporários (7 dias) para as fotos privadas.
 // GET /api/admin/list   cabeçalho: x-admin-password
-import { get, list } from "@vercel/blob";
-import { isAdmin, sendJson, signPath } from "../_lib.js";
+import { BUCKET, isAdmin, sendJson, supabase } from "../_lib.js";
 
-async function readJson(pathname) {
-  const result = await get(pathname, { access: "private", useCache: false });
-  if (!result || result.statusCode !== 200) return null;
-  return JSON.parse(await new Response(result.stream).text());
-}
+const LINK_SECONDS = 7 * 24 * 60 * 60;
 
 export default async function handler(req, res) {
   if (!isAdmin(req)) return sendJson(res, 401, { status: "error", message: "senha incorreta" });
 
-  const paths = [];
-  let cursor;
-  do {
-    const page = await list({ prefix: "respostas/", cursor, limit: 1000 });
-    page.blobs.forEach((b) => paths.push(b.pathname));
-    cursor = page.hasMore ? page.cursor : undefined;
-  } while (cursor);
-
-  const records = [];
-  for (let i = 0; i < paths.length; i += 20) {
-    const batch = await Promise.all(paths.slice(i, i + 20).map((p) => readJson(p).catch(() => null)));
-    batch.forEach((r) => r && records.push(r));
+  const rows = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase
+      .from("respostas")
+      .select("*")
+      .order("enviado_em", { ascending: false })
+      .range(from, from + 999);
+    if (error) return sendJson(res, 500, { status: "error", message: "falha ao ler" });
+    rows.push(...data);
+    if (data.length < 1000) break;
   }
 
-  records.sort((a, b) => String(b.submittedAt).localeCompare(String(a.submittedAt)));
-  records.forEach((r) => {
-    r.photoUrls = (r.photos || []).map(
-      (p) => `/api/admin/photo?path=${encodeURIComponent(p)}&sig=${signPath(p)}`
-    );
-  });
+  const paths = rows.flatMap((r) => r.fotos || []);
+  const urlByPath = {};
+  for (let i = 0; i < paths.length; i += 500) {
+    const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths.slice(i, i + 500), LINK_SECONDS);
+    (data || []).forEach((s) => { if (s.signedUrl) urlByPath[s.path] = s.signedUrl; });
+  }
+
+  const records = rows.map((r) => ({
+    id: r.id,
+    submittedAt: r.enviado_em,
+    fullName: r.nome,
+    crm: r.crm,
+    phone: r.celular,
+    stand: r.stand,
+    consent: r.aceite_dados,
+    newsletter: r.newsletter,
+    photoUrls: (r.fotos || []).map((p) => urlByPath[p]).filter(Boolean),
+  }));
   return sendJson(res, 200, { status: "ok", records });
 }

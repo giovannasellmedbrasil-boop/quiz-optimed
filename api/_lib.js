@@ -1,36 +1,27 @@
 // Funções compartilhadas pelas rotas da API (arquivos com "_" não viram rota).
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
+import { createClient } from "@supabase/supabase-js";
 
 export const ID_RE = /^[a-f0-9-]{36}$/;
+export const BUCKET = "fotos";
+
+// Cliente com a chave secreta: só existe no servidor, nunca vai para o navegador.
+export const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
 export function sendJson(res, status, body) {
   res.status(status).setHeader("Cache-Control", "no-store");
   res.json(body);
 }
 
-function safeEqual(a, b) {
-  const x = Buffer.from(String(a));
-  const y = Buffer.from(String(b));
-  return x.length === y.length && timingSafeEqual(x, y);
-}
-
 // Painel admin: senha enviada no cabeçalho x-admin-password.
 export function isAdmin(req) {
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) return false;
-  return safeEqual(req.headers["x-admin-password"] || "", expected);
-}
-
-// Assinatura para os links de foto (uma <img> não consegue mandar cabeçalho).
-export function signPath(pathname) {
-  return createHmac("sha256", process.env.ADMIN_PASSWORD || "")
-    .update(pathname)
-    .digest("hex")
-    .slice(0, 32);
-}
-
-export function isValidSignature(pathname, sig) {
-  return !!process.env.ADMIN_PASSWORD && safeEqual(signPath(pathname), sig || "");
+  const x = Buffer.from(String(req.headers["x-admin-password"] || ""));
+  const y = Buffer.from(expected);
+  return x.length === y.length && timingSafeEqual(x, y);
 }
 
 export async function readRawBody(req, limitBytes) {

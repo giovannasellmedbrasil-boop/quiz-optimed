@@ -267,10 +267,10 @@
 
   // Planilha (CSV com ; e BOM, abre direto no Excel em português)
   $("csv").addEventListener("click", function () {
-    var head = ["Data/Hora", "Nome completo", "CRM", "Celular", "Stand", "Newsletter Optimed", "Aceite de uso dos dados", "Qtd. fotos", "Links das fotos"];
+    var head = ["Data/Hora", "Nome completo", "CRM", "Celular", "Stand", "Newsletter Optimed", "Aceite de uso dos dados", "Qtd. fotos", "Links das fotos (válidos por 7 dias)"];
     var lines = [head].concat(filtered().map(function (r) {
       return [fmtDate(r.submittedAt), r.fullName, r.crm, r.phone, r.stand, r.newsletter ? "Sim" : "Não", r.consent ? "Sim" : "Não",
-        (r.photoUrls || []).length, (r.photoUrls || []).map(function (u) { return location.origin + u; }).join(" ")];
+        (r.photoUrls || []).length, (r.photoUrls || []).join(" ")];
     })).map(function (row) {
       return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(";");
     });
